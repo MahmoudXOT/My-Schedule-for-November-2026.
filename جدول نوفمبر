@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول نوفمبر 2026 — جدول الحصص ومتابعة الطلاب</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        amber: { 50: '#fffbeb', 100: '#fef3c7', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309', 900: '#78350f' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        .font-amiri { font-family: 'Amiri', serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
+
+    <!-- TOP ANNOUNCEMENT BANNER FOR EGYPT TIME -->
+    <div class="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-slate-950 font-bold text-xs py-2 px-4 text-center shadow-md border-b border-amber-500/30 flex items-center justify-center space-x-2 space-x-reverse">
+        <i data-lucide="clock" class="w-4 h-4 animate-pulse"></i>
+        <span>جميع الحصص والمواعيد المدرجة بالجدول حسب توقيت مصر الرسمي (EET).</span>
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="bg-gradient-to-tr from-amber-600 to-amber-400 p-2.5 rounded-2xl text-slate-950 shadow-lg shadow-amber-500/20">
+                    <i data-lucide="calendar" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 id="header-title" class="text-xl font-black text-white tracking-wide">أكاديمية نوفمبر ٢٠٢٦</h1>
+                    <p class="text-xs text-amber-400 font-semibold">متابعة الساعات التراكمية وحصص الطلاب</p>
+                </div>
+            </div>
+
+            <!-- VIEW SWITCHER & ACTIONS -->
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <button id="nav-admin-btn" onclick="window.switchView('admin')" class="flex items-center space-x-1.5 space-x-reverse px-3.5 py-2 rounded-xl text-sm font-bold transition-all bg-amber-600 hover:bg-amber-500 text-slate-950 shadow-md">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span data-i18n="admin_panel">لوحة المعلم</span>
+                </button>
+                <button id="nav-student-btn" onclick="window.switchView('student')" class="flex items-center space-x-1.5 space-x-reverse px-3.5 py-2 rounded-xl text-sm font-bold transition-all bg-slate-800/80 hover:bg-slate-700 text-amber-200 border border-amber-700/50">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                    <span data-i18n="student_portal">بوابة الطالب</span>
+                </button>
+                <button onclick="window.openAiModal()" class="flex items-center space-x-1.5 space-x-reverse px-3.5 py-2 rounded-xl text-sm font-bold transition-all bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span data-i18n="ai_report">تقرير الذكاء الاصطناعي</span>
+                </button>
+                <button onclick="window.toggleLanguage()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 transition-all border border-slate-700" title="تغيير اللغة / Toggle Language">
+                    <i data-lucide="languages" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ADMIN DASHBOARD VIEW -->
+        <div id="admin-view" class="space-y-8">
+
+            <!-- STATS CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400">إجمالي الحصص المقررة</span>
+                        <div class="p-2 bg-amber-500/10 text-amber-400 rounded-xl"><i data-lucide="book-open" class="w-5 h-5"></i></div>
+                    </div>
+                    <p id="stat-total-sessions" class="text-3xl font-black text-white mt-2">0</p>
+                    <p class="text-xs text-slate-500 mt-1">حصة مسجلة بالجدول</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400">الحصص المنجزة</span>
+                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
+                    </div>
+                    <p id="stat-completed-sessions" class="text-3xl font-black text-emerald-400 mt-2">0</p>
+                    <p class="text-xs text-slate-500 mt-1">تمت بنجاح وتحديثها</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400">الساعات المنجزة (حتى 28/11)</span>
+                        <div class="p-2 bg-amber-500/10 text-amber-400 rounded-xl"><i data-lucide="clock" class="w-5 h-5"></i></div>
+                    </div>
+                    <p id="stat-completed-hours-nov28" class="text-3xl font-black text-amber-400 mt-2">0 س</p>
+                    <p class="text-xs text-slate-500 mt-1">المجموع المنجز حتى 28 نوفمبر</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-amber-950/60 via-slate-900 to-slate-900 border border-amber-500/40 rounded-3xl p-5 shadow-md">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-amber-300">الساعات المستهدفة vs المنجزة</span>
+                        <div class="p-2 bg-amber-500/20 text-amber-300 rounded-xl"><i data-lucide="award" class="w-5 h-5"></i></div>
+                    </div>
+                    <p id="stat-month-end-completed-hours" class="text-2xl font-black text-amber-400 mt-2">0 / 0 س</p>
+                    <p class="text-xs text-amber-200/70 mt-1">إجمالي المنجز من أصل المستهدف العام</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400">إجمالي الطلاب</span>
+                        <div class="p-2 bg-blue-500/10 text-blue-400 rounded-xl"><i data-lucide="users" class="w-5 h-5"></i></div>
+                    </div>
+                    <p id="stat-total-students" class="text-3xl font-black text-white mt-2">0</p>
+                    <p class="text-xs text-slate-500 mt-1">طلاب مستمرون بالأكاديمية</p>
+                </div>
+            </div>
+
+            <!-- STUDENTS COMPLETION PROGRESS SECTION -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <div class="flex items-center space-x-3 space-x-reverse">
+                        <div class="p-2 bg-amber-500/10 text-amber-400 rounded-xl"><i data-lucide="award" class="w-5 h-5"></i></div>
+                        <div>
+                            <h3 class="font-bold text-white text-base">مجموع ساعات الطلاب التراكمية الإجمالية والإضافية</h3>
+                            <p class="text-xs text-slate-400">حاسبة دقيقة تحسب الساعات المنجزة فورياً وتضيف الحصص الإضافية فوق المستهدف</p>
+                        </div>
+                    </div>
+                    <button onclick="window.openAddStudentModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl text-xs font-bold transition-all border border-slate-700 flex items-center space-x-1.5 space-x-reverse">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        <span>إضافة طالب جديد</span>
+                    </button>
+                </div>
+                <div id="students-completion-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Cards rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- TABLE CONTROLS & SEARCH -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3 space-x-reverse w-full sm:w-auto">
+                        <div class="p-2 bg-amber-500/10 text-amber-400 rounded-xl"><i data-lucide="calendar-range" class="w-5 h-5"></i></div>
+                        <h2 class="text-lg font-bold text-white">جدول حصص الأكاديمية الزمني المرتب</h2>
+                        <span id="session-count-badge" class="px-2.5 py-1 bg-slate-800 text-amber-400 text-xs font-bold rounded-lg border border-slate-700">85 حصة</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                        <button onclick="window.openAddSessionModal()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-md flex items-center space-x-1.5 space-x-reverse">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>إضافة حصة جديدة</span>
+                        </button>
+                        <button onclick="window.resetDataStorage()" class="px-3 py-2 bg-slate-800 hover:bg-rose-950 text-rose-400 rounded-xl text-xs font-bold transition-all border border-slate-700 flex items-center space-x-1 space-x-reverse" title="إعادة ضبط البيانات الحالية">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                            <span>إعادة ضبط</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FILTERS BAR -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute right-3 top-3.5 text-slate-500"></i>
+                        <input type="text" id="admin-search" oninput="window.filterSessions()" placeholder="بحث باسم الطالب أو اليوم أو التاريخ..." class="w-full pr-10 pl-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <select id="admin-filter-student" onchange="window.filterSessions()" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-amber-500">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div>
+                        <select id="admin-filter-status" onchange="window.filterSessions()" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-amber-500">
+                            <option value="">جميع الحالات</option>
+                            <option value="completed">منجزة ✅</option>
+                            <option value="pending">قيد الانتظار ⏳</option>
+                            <option value="postponed">مؤجلة 🔄</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- MAIN SESSIONS TABLE -->
+                <div class="overflow-x-auto rounded-2xl border border-slate-800">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-slate-950 text-slate-400 uppercase font-bold border-b border-slate-800">
+                            <tr>
+                                <th class="py-4 px-4 text-center">الإنجاز</th>
+                                <th class="py-4 px-4">التاريخ واليوم</th>
+                                <th class="py-4 px-4">الطالب</th>
+                                <th class="py-4 px-4">موعد الحصة (توقيت مصر)</th>
+                                <th class="py-4 px-4">المدة</th>
+                                <th class="py-4 px-4">التراكمي بعد الحصة</th>
+                                <th class="py-4 px-4">المتبقي للهدف</th>
+                                <th class="py-4 px-4">تقييم الحفظ والعربية</th>
+                                <th class="py-4 px-4 text-center">تعديل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-sessions-table" class="divide-y divide-slate-800/60 font-medium">
+                            <!-- Session Rows Populated Dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDENT PORTAL VIEW -->
+        <div id="student-view" class="hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">بوابة الطالب الشخصية</h2>
+                        <p class="text-xs text-slate-400">اختر اسم الطالب لعرض الجداول الفردية والساعات التراكمية وملاحظات المعلم.</p>
+                    </div>
+                    <div class="w-full sm:w-64">
+                        <select id="student-selector" onchange="window.onStudentSelect(this.value)" class="w-full px-4 py-2.5 bg-slate-950 border border-amber-500/50 rounded-xl text-sm font-bold text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <!-- Options populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="student-empty-state" class="py-16 text-center space-y-3">
+                    <div class="p-4 bg-slate-800/50 rounded-full w-16 h-16 mx-auto flex items-center justify-center text-amber-400 border border-slate-700">
+                        <i data-lucide="user-check" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white">مرحباً بك في بوابة الطالب</h3>
+                    <p class="text-xs text-slate-400 max-w-sm mx-auto">الرجاء اختيار اسمك من القائمة المنسدلة أعلاه لعرض الجدول التراكمي المخصص لك لشهر نوفمبر.</p>
+                </div>
+
+                <!-- STUDENT DASHBOARD SECTION -->
+                <div id="student-dashboard" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
+                            <span class="text-xs font-bold text-slate-400 block mb-1">إجمالي الساعات المكتملة</span>
+                            <span id="student-stat-hours" class="text-2xl font-black text-amber-400">0:00 س</span>
+                            <span id="student-stat-target-desc" class="text-xs text-slate-500 block mt-1">من أصل الهدف</span>
+                        </div>
+                        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
+                            <span class="text-xs font-bold text-slate-400 block mb-1">عدد الحصص المنجزة</span>
+                            <span id="student-stat-completed" class="text-2xl font-black text-emerald-400">0 / 0</span>
+                            <span class="text-xs text-slate-500 block mt-1">حصص مكتملة بالجدول</span>
+                        </div>
+                        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
+                            <span class="text-xs font-bold text-slate-400 block mb-1">آخر ملاحظات الحفظ</span>
+                            <span id="student-stat-memorization" class="text-xs font-bold text-slate-200 block truncate">لا يوجد</span>
+                            <span class="text-xs text-slate-500 block mt-1">تقييم الأستاذ المباشر</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-2xl border border-slate-800">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-slate-950 text-slate-400 uppercase font-bold border-b border-slate-800">
+                                <tr>
+                                    <th class="py-4 px-6">الحالة</th>
+                                    <th class="py-4 px-6">التاريخ واليوم</th>
+                                    <th class="py-4 px-6">الموعد (بتوقيت مصر)</th>
+                                    <th class="py-4 px-6">المدة</th>
+                                    <th class="py-4 px-6">التراكمي بعد الحصة</th>
+                                    <th class="py-4 px-6">المتبقي للهدف</th>
+                                    <th class="py-4 px-6">تقييم القرآن والحفظ</th>
+                                    <th class="py-4 px-6">ملاحظات العربية</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-sessions-table" class="divide-y divide-slate-800 font-medium">
+                                <!-- Student sessions dynamically loaded -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: ADD STUDENT -->
+    <div id="student-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl border border-slate-700 overflow-hidden transform transition-all">
+            <div class="bg-gradient-to-r from-amber-600 to-amber-700 text-slate-950 p-5 flex items-center justify-between font-bold">
+                <h3 class="text-base">إضافة طالب جديد</h3>
+                <button onclick="window.closeAddStudentModal()" class="w-8 h-8 rounded-full bg-slate-950/10 hover:bg-slate-950/20 flex items-center justify-center">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">اسم الطالب:</label>
+                    <input type="text" id="new-student-name-input" placeholder="أدخل اسم الطالب الكامل" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">هدف الساعات الشهري (ساعات):</label>
+                    <input type="number" id="new-student-target-hours" value="6" step="0.5" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">وصف الهدف أو تاريخ الإتمام الإرشادي:</label>
+                    <input type="text" id="new-student-target-input" placeholder="مثال: هدف: 6 س — يكتمل 28/11" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div class="flex items-center justify-end space-x-2 space-x-reverse pt-4">
+                    <button onclick="window.closeAddStudentModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
+                    <button onclick="window.confirmAddStudent()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-xs font-bold shadow-md">إضافة الطالب</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD SESSION -->
+    <div id="meeting-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl border border-slate-700 overflow-hidden transform transition-all">
+            <div class="bg-gradient-to-r from-amber-600 to-amber-700 text-slate-950 p-5 flex items-center justify-between font-bold">
+                <h3 class="text-base">إضافة حصة جديدة</h3>
+                <button onclick="window.closeAddSessionModal()" class="w-8 h-8 rounded-full bg-slate-950/10 hover:bg-slate-950/20 flex items-center justify-center">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">اختر الطالب:</label>
+                    <select id="new-meeting-student" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">التاريخ الكامل للحصة:</label>
+                    <input type="date" id="new-meeting-date-picker" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">موعد الحصة (التوقيت):</label>
+                    <input type="time" id="new-meeting-time-picker" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">مدة الحصة المحدد:</label>
+                    <select id="new-meeting-duration-select" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="30 د">30 دقيقة</option>
+                        <option value="45 د">45 دقيقة</option>
+                        <option value="60 د">60 دقيقة (ساعة كاملة)</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-end space-x-2 space-x-reverse pt-4">
+                    <button onclick="window.closeAddSessionModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
+                    <button onclick="window.confirmAddSession()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-xs font-bold shadow-md">إضافة الحصة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EDIT SESSION / PROGRESS NOTES -->
+    <div id="session-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-lg w-full shadow-2xl border border-slate-700 overflow-hidden transform transition-all">
+            <div class="bg-slate-800 text-white p-5 flex items-center justify-between border-b border-slate-700 font-bold">
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <i data-lucide="edit" class="w-5 h-5 text-amber-400"></i>
+                    <span>تعديل بيانات الحصة وتقييم الطالب</span>
+                </div>
+                <button onclick="window.closeSessionModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="modal-session-id">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">تاريخ جديد (اختياري):</label>
+                        <input type="date" id="modal-date" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">اليوم:</label>
+                        <input type="text" id="modal-day" readonly class="w-full p-2.5 bg-slate-950/50 border border-slate-800 rounded-xl text-xs text-slate-400">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">وقت الحصة:</label>
+                        <input type="text" id="modal-time" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">المدة:</label>
+                        <select id="modal-duration" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
+                            <option value="30 د">30 دقيقة</option>
+                            <option value="45 د">45 دقيقة</option>
+                            <option value="60 د">60 دقيقة</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">تقييم القرآن وتسميع الحفظ:</label>
+                    <textarea id="modal-memorization" rows="2" placeholder="أدخل تقييم التسميع والمراجعة السورة والآيات..." class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">ملاحظات اللغة العربية والنحو:</label>
+                    <textarea id="modal-arabic" rows="2" placeholder="أدخل ملاحظات النحو أو دروس اللغة العربية..." class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+                    <div class="flex items-center space-x-2 space-x-reverse">
+                        <button onclick="window.toggleModalSessionStatus()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded-lg border border-slate-700">
+                            تغيير حالة الإنجاز: <span id="modal-display-status" class="text-amber-400"></span>
+                        </button>
+                    </div>
+                    <button onclick="window.openPostponeModal()" class="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold rounded-lg border border-amber-500/40">
+                        تأجيل الحصة 🔄
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between pt-4 border-t border-slate-800">
+                    <button onclick="window.deleteCurrentSession()" class="px-3 py-2 bg-rose-950 hover:bg-rose-900 text-rose-300 rounded-xl text-xs font-bold border border-rose-800">حذف الحصة</button>
+                    <div class="flex items-center space-x-2 space-x-reverse">
+                        <button onclick="window.closeSessionModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
+                        <button onclick="window.saveSessionDetails()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-xs font-bold shadow-md">حفظ والتحديث</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: POSTPONE SESSION -->
+    <div id="postpone-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl border border-slate-700 overflow-hidden transform transition-all">
+            <div class="bg-gradient-to-r from-amber-700 to-amber-800 text-white p-5 flex items-center justify-between border-b border-amber-600/40 font-bold">
+                <h3 class="text-base">تأجيل الحصة وموعد جديد</h3>
+                <button onclick="window.closePostponeModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-amber-300">حدد موعد الحصة البديل للحفاظ على دقة الساعات التراكمية وسجل الطالب.</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">التاريخ الجديد من التقويم:</label>
+                    <input type="date" id="postpone-date-picker" onchange="window.updateDayFromDate('postpone-date-picker', 'postpone-day')" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">اليوم الجديد:</label>
+                    <input type="text" id="postpone-day" readonly class="w-full p-2.5 bg-slate-950/50 border border-slate-800 rounded-xl text-sm text-slate-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">الوقت الجديد:</label>
+                    <input type="time" id="postpone-time-picker" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div class="flex items-center justify-end space-x-2 space-x-reverse pt-4">
+                    <button onclick="window.closePostponeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold">إلغاء</button>
+                    <button onclick="window.confirmPostponeSession()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-xs font-bold shadow-md">تأكيد التأجيل</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM MESSAGE BOX -->
+    <div id="custom-msg-box" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-sm w-full shadow-2xl border border-slate-700 overflow-hidden transform transition-all p-6 text-center space-y-4">
+            <div id="msg-box-icon" class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto">
+                <i data-lucide="check-circle-2" class="w-8 h-8"></i>
+            </div>
+            <h3 id="msg-box-title" class="text-lg font-bold text-white">تنبيه</h3>
+            <p id="msg-box-text" class="text-xs text-slate-300">تمت العملية بنجاح.</p>
+            <button onclick="window.closeCustomMsgBox()" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md w-full">تم</button>
+        </div>
+    </div>
+
+    <!-- AI REPORT MODAL -->
+    <div id="ai-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-700 overflow-hidden transform transition-all">
+            <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 p-5 flex items-center justify-between font-bold">
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i>
+                    <div>
+                        <h3 class="text-base font-black">مولد التقارير الذكية (AI Report)</h3>
+                        <p class="text-xs text-slate-950/80 font-normal">تقرير شهر نوفمبر ٢٠٢٦ الشامل للمتابعة والتقدم</p>
+                    </div>
+                </div>
+                <button onclick="window.closeAiModal()" class="w-8 h-8 rounded-full bg-slate-950/10 hover:bg-slate-950/20 flex items-center justify-center">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex gap-2">
+                    <select id="ai-target-student" class="flex-grow px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <!-- Options populated dynamically -->
+                    </select>
+                    <button onclick="window.generateAiReport()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-md flex items-center space-x-1.5 space-x-reverse shrink-0">
+                        <i data-lucide="bot" class="w-4 h-4"></i>
+                        <span>توليد التقرير</span>
+                    </button>
+                </div>
+
+                <div id="ai-loading" class="hidden py-8 text-center space-y-2">
+                    <div class="inline-block animate-spin rounded-full h-7 w-7 border-4 border-amber-500 border-t-transparent"></div>
+                    <p class="text-xs font-bold text-slate-300">جاري إعداد التقرير بواسطة الذكاء الاصطناعي...</p>
+                </div>
+
+                <div id="ai-result-container" class="hidden space-y-3">
+                    <div class="bg-slate-950 border border-amber-500/30 rounded-2xl p-4 relative">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
+                            <h4 id="ai-report-title" class="font-bold text-amber-400 text-xs">تقرير الأداء لشهر نوفمبر ٢٠٢٦</h4>
+                            <button onclick="window.copyAiReport()" class="flex items-center space-x-1 space-x-reverse text-xs bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-lg text-slate-300 hover:bg-slate-800">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>نسخ</span>
+                            </button>
+                        </div>
+                        <div id="ai-report-content" class="text-xs text-slate-300 leading-relaxed space-y-2 font-amiri text-base">
+                            <!-- Generated text -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
+        // Full November Schedule Dataset (85 sessions) with ISO date strings for robust sorting
+        const rawScheduleData = [
+            { id: 1, fullDate: "2026-11-01", date: "1/11", day: "الأحد", time: "11:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "0:30", remaining: "5:30", completed: true, memorization: "", arabic: "" },
+            { id: 2, fullDate: "2026-11-01", date: "1/11", day: "الأحد", time: "11:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "0:30", remaining: "5:30", completed: true, memorization: "", arabic: "" },
+            { id: 3, fullDate: "2026-11-02", date: "2/11", day: "الاثنين", time: "1 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "0:45", remaining: "8:15", completed: true, memorization: "", arabic: "" },
+            { id: 4, fullDate: "2026-11-02", date: "2/11", day: "الاثنين", time: "3 ص", student: "عباس", duration: "45 د", durationVal: 0.75, cumulative: "0:45", remaining: "5:15", completed: true, memorization: "", arabic: "" },
+            { id: 5, fullDate: "2026-11-02", date: "2/11", day: "الاثنين", time: "6 ص", student: "رائد", duration: "60 د", durationVal: 1.0, cumulative: "1:00", remaining: "—", completed: true, memorization: "", arabic: "" },
+            { id: 6, fullDate: "2026-11-03", date: "3/11", day: "الثلاثاء", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "0:30", remaining: "5:30", completed: true, memorization: "", arabic: "" },
+            { id: 7, fullDate: "2026-11-03", date: "3/11", day: "الثلاثاء", time: "6 ص", student: "يوسف", duration: "45 د", durationVal: 0.75, cumulative: "0:45", remaining: "5:15", completed: true, memorization: "", arabic: "" },
+            { id: 8, fullDate: "2026-11-04", date: "4/11", day: "الأربعاء", time: "12 ص", student: "المثنى", duration: "30 د", durationVal: 0.5, cumulative: "0:30", remaining: "5:30", completed: true, memorization: "", arabic: "" },
+            { id: 9, fullDate: "2026-11-04", date: "4/11", day: "الأربعاء", time: "4 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "1:30", remaining: "7:30", completed: true, memorization: "", arabic: "" },
+            { id: 10, fullDate: "2026-11-05", date: "5/11", day: "الخميس", time: "12 ص", student: "سمير", duration: "45 د", durationVal: 0.75, cumulative: "0:45", remaining: "5:15", completed: true, memorization: "", arabic: "" },
+            { id: 11, fullDate: "2026-11-05", date: "5/11", day: "الخميس", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "1:00", remaining: "5:00", completed: true, memorization: "", arabic: "" },
+            { id: 12, fullDate: "2026-11-05", date: "5/11", day: "الخميس", time: "6 ص", student: "يوسف", duration: "45 د", durationVal: 0.75, cumulative: "1:30", remaining: "4:30", completed: true, memorization: "", arabic: "" },
+            { id: 13, fullDate: "2026-11-06", date: "6/11", day: "الجمعة", time: "10:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "1:00", remaining: "5:00", completed: true, memorization: "", arabic: "" },
+            { id: 14, fullDate: "2026-11-06", date: "6/11", day: "الجمعة", time: "10:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "1:00", remaining: "5:00", completed: true, memorization: "", arabic: "" },
+            { id: 15, fullDate: "2026-11-07", date: "7/11", day: "السبت", time: "12 ص", student: "سمير", duration: "45 د", durationVal: 0.75, cumulative: "1:30", remaining: "4:30", completed: true, memorization: "", arabic: "" },
+            { id: 16, fullDate: "2026-11-07", date: "7/11", day: "السبت", time: "3 ص", student: "عباس", duration: "45 د", durationVal: 0.75, cumulative: "1:30", remaining: "4:30", completed: true, memorization: "", arabic: "" },
+            { id: 17, fullDate: "2026-11-07", date: "7/11", day: "السبت", time: "4 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "2:15", remaining: "6:45", completed: true, memorization: "", arabic: "" },
+            { id: 18, fullDate: "2026-11-07", date: "7/11", day: "السبت", time: "7 م", student: "المثنى", duration: "60 د", durationVal: 1.0, cumulative: "1:30", remaining: "4:30", completed: true, memorization: "", arabic: "" },
+            { id: 19, fullDate: "2026-11-07", date: "7/11", day: "السبت", time: "11:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "1:30", remaining: "4:30", completed: true, memorization: "", arabic: "" },
+            { id: 20, fullDate: "2026-11-07", date: "7/11", day: "السبت", time: "11:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "1:30", remaining: "4:30", completed: true, memorization: "", arabic: "" },
+            { id: 21, fullDate: "2026-11-08", date: "8/11", day: "الأحد", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "1:30", remaining: "4:30", completed: false, memorization: "", arabic: "" },
+            { id: 22, fullDate: "2026-11-08", date: "8/11", day: "الأحد", time: "11:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "2:00", remaining: "4:00", completed: false, memorization: "", arabic: "" },
+            { id: 23, fullDate: "2026-11-08", date: "8/11", day: "الأحد", time: "11:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "2:00", remaining: "4:00", completed: false, memorization: "", arabic: "" },
+            { id: 24, fullDate: "2026-11-09", date: "9/11", day: "الاثنين", time: "1 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "3:00", remaining: "6:00", completed: false, memorization: "", arabic: "" },
+            { id: 25, fullDate: "2026-11-09", date: "9/11", day: "الاثنين", time: "3 ص", student: "عباس", duration: "45 د", durationVal: 0.75, cumulative: "2:15", remaining: "3:45", completed: false, memorization: "", arabic: "" },
+            { id: 26, fullDate: "2026-11-09", date: "9/11", day: "الاثنين", time: "6 ص", student: "رائد", duration: "60 د", durationVal: 1.0, cumulative: "2:00", remaining: "—", completed: false, memorization: "", arabic: "" },
+            { id: 27, fullDate: "2026-11-10", date: "10/11", day: "الثلاثاء", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "2:00", remaining: "4:00", completed: false, memorization: "", arabic: "" },
+            { id: 28, fullDate: "2026-11-10", date: "10/11", day: "الثلاثاء", time: "6 ص", student: "يوسف", duration: "45 د", durationVal: 0.75, cumulative: "2:15", remaining: "3:45", completed: false, memorization: "", arabic: "" },
+            { id: 29, fullDate: "2026-11-11", date: "11/11", day: "الأربعاء", time: "12 ص", student: "المثنى", duration: "30 د", durationVal: 0.5, cumulative: "2:00", remaining: "4:00", completed: false, memorization: "", arabic: "" },
+            { id: 30, fullDate: "2026-11-11", date: "11/11", day: "الأربعاء", time: "4 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "3:45", remaining: "5:15", completed: false, memorization: "", arabic: "" },
+            { id: 31, fullDate: "2026-11-12", date: "12/11", day: "الخميس", time: "12 ص", student: "سمير", duration: "45 د", durationVal: 0.75, cumulative: "2:15", remaining: "3:45", completed: false, memorization: "", arabic: "" },
+            { id: 32, fullDate: "2026-11-12", date: "12/11", day: "الخميس", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "2:30", remaining: "3:30", completed: false, memorization: "", arabic: "" },
+            { id: 33, fullDate: "2026-11-12", date: "12/11", day: "الخميس", time: "6 ص", student: "يوسف", duration: "45 د", durationVal: 0.75, cumulative: "3:00", remaining: "3:00", completed: false, memorization: "", arabic: "" },
+            { id: 34, fullDate: "2026-11-13", date: "13/11", day: "الجمعة", time: "10:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "2:30", remaining: "3:30", completed: false, memorization: "", arabic: "" },
+            { id: 35, fullDate: "2026-11-13", date: "13/11", day: "الجمعة", time: "10:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "2:30", remaining: "3:30", completed: false, memorization: "", arabic: "" },
+            { id: 36, fullDate: "2026-11-14", date: "14/11", day: "السبت", time: "12 ص", student: "سمير", duration: "45 د", durationVal: 0.75, cumulative: "3:00", remaining: "3:00", completed: false, memorization: "", arabic: "" },
+            { id: 37, fullDate: "2026-11-14", date: "14/11", day: "السبت", time: "3 ص", student: "عباس", duration: "45 د", durationVal: 0.75, cumulative: "3:00", remaining: "3:00", completed: false, memorization: "", arabic: "" },
+            { id: 38, fullDate: "2026-11-14", date: "14/11", day: "السبت", time: "4 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "4:30", remaining: "4:30", completed: false, memorization: "", arabic: "" },
+            { id: 39, fullDate: "2026-11-14", date: "14/11", day: "السبت", time: "7 م", student: "المثنى", duration: "60 د", durationVal: 1.0, cumulative: "3:00", remaining: "3:00", completed: false, memorization: "", arabic: "" },
+            { id: 40, fullDate: "2026-11-14", date: "14/11", day: "السبت", time: "11:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "3:00", remaining: "3:00", completed: false, memorization: "", arabic: "" },
+            { id: 41, fullDate: "2026-11-14", date: "14/11", day: "السبت", time: "11:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "3:00", remaining: "3:00", completed: false, memorization: "", arabic: "" },
+            { id: 42, fullDate: "2026-11-15", date: "15/11", day: "الأحد", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "3:00", remaining: "3:00", completed: false, memorization: "", arabic: "" },
+            { id: 43, fullDate: "2026-11-15", date: "15/11", day: "الأحد", time: "11:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "3:30", remaining: "2:30", completed: false, memorization: "", arabic: "" },
+            { id: 44, fullDate: "2026-11-15", date: "15/11", day: "الأحد", time: "11:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "3:30", remaining: "2:30", completed: false, memorization: "", arabic: "" },
+            { id: 45, fullDate: "2026-11-16", date: "16/11", day: "الاثنين", time: "1 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "5:15", remaining: "3:45", completed: false, memorization: "", arabic: "" },
+            { id: 46, fullDate: "2026-11-16", date: "16/11", day: "الاثنين", time: "3 ص", student: "عباس", duration: "45 د", durationVal: 0.75, cumulative: "3:45", remaining: "2:15", completed: false, memorization: "", arabic: "" },
+            { id: 47, fullDate: "2026-11-16", date: "16/11", day: "الاثنين", time: "6 ص", student: "رائد", duration: "60 د", durationVal: 1.0, cumulative: "3:00", remaining: "—", completed: false, memorization: "", arabic: "" },
+            { id: 48, fullDate: "2026-11-17", date: "17/11", day: "الثلاثاء", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "3:30", remaining: "2:30", completed: false, memorization: "", arabic: "" },
+            { id: 49, fullDate: "2026-11-17", date: "17/11", day: "الثلاثاء", time: "6 ص", student: "يوسف", duration: "45 د", durationVal: 0.75, cumulative: "3:45", remaining: "2:15", completed: false, memorization: "", arabic: "" },
+            { id: 50, fullDate: "2026-11-18", date: "18/11", day: "الأربعاء", time: "12 ص", student: "المثنى", duration: "30 د", durationVal: 0.5, cumulative: "3:30", remaining: "2:30", completed: false, memorization: "", arabic: "" },
+            { id: 51, fullDate: "2026-11-18", date: "18/11", day: "الأربعاء", time: "4 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "6:00", remaining: "3:00", completed: false, memorization: "", arabic: "" },
+            { id: 52, fullDate: "2026-11-19", date: "19/11", day: "الخميس", time: "12 ص", student: "سمير", duration: "45 د", durationVal: 0.75, cumulative: "3:45", remaining: "2:15", completed: false, memorization: "", arabic: "" },
+            { id: 53, fullDate: "2026-11-19", date: "19/11", day: "الخميس", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "4:00", remaining: "2:00", completed: false, memorization: "", arabic: "" },
+            { id: 54, fullDate: "2026-11-19", date: "19/11", day: "الخميس", time: "6 ص", student: "يوسف", duration: "45 د", durationVal: 0.75, cumulative: "4:30", remaining: "1:30", completed: false, memorization: "", arabic: "" },
+            { id: 55, fullDate: "2026-11-20", date: "20/11", day: "الجمعة", time: "10:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "4:00", remaining: "2:00", completed: false, memorization: "", arabic: "" },
+            { id: 56, fullDate: "2026-11-20", date: "20/11", day: "الجمعة", time: "10:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "4:00", remaining: "2:00", completed: false, memorization: "", arabic: "" },
+            { id: 57, fullDate: "2026-11-21", date: "21/11", day: "السبت", time: "12 ص", student: "سمير", duration: "45 د", durationVal: 0.75, cumulative: "4:30", remaining: "1:30", completed: false, memorization: "", arabic: "" },
+            { id: 58, fullDate: "2026-11-21", date: "21/11", day: "السبت", time: "3 ص", student: "عباس", duration: "45 د", durationVal: 0.75, cumulative: "4:30", remaining: "1:30", completed: false, memorization: "", arabic: "" },
+            { id: 59, fullDate: "2026-11-21", date: "21/11", day: "السبت", time: "4 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "6:45", remaining: "2:15", completed: false, memorization: "", arabic: "" },
+            { id: 60, fullDate: "2026-11-21", date: "21/11", day: "السبت", time: "7 م", student: "المثنى", duration: "60 د", durationVal: 1.0, cumulative: "4:30", remaining: "1:30", completed: false, memorization: "", arabic: "" },
+            { id: 61, fullDate: "2026-11-21", date: "21/11", day: "السبت", time: "11:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "4:30", remaining: "1:30", completed: false, memorization: "", arabic: "" },
+            { id: 62, fullDate: "2026-11-21", date: "21/11", day: "السبت", time: "11:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "4:30", remaining: "1:30", completed: false, memorization: "", arabic: "" },
+            { id: 63, fullDate: "2026-11-22", date: "22/11", day: "الأحد", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "4:30", remaining: "1:30", completed: false, memorization: "", arabic: "" },
+            { id: 64, fullDate: "2026-11-22", date: "22/11", day: "الأحد", time: "11:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "5:00", remaining: "1:00", completed: false, memorization: "", arabic: "" },
+            { id: 65, fullDate: "2026-11-22", date: "22/11", day: "الأحد", time: "11:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "5:00", remaining: "1:00", completed: false, memorization: "", arabic: "" },
+            { id: 66, fullDate: "2026-11-23", date: "23/11", day: "الاثنين", time: "1 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "7:30", remaining: "1:30", completed: false, memorization: "", arabic: "" },
+            { id: 67, fullDate: "2026-11-23", date: "23/11", day: "الاثنين", time: "3 ص", student: "عباس", duration: "45 د", durationVal: 0.75, cumulative: "5:15", remaining: "0:45", completed: false, memorization: "", arabic: "" },
+            { id: 68, fullDate: "2026-11-23", date: "23/11", day: "الاثنين", time: "6 ص", student: "رائد", duration: "60 د", durationVal: 1.0, cumulative: "4:00", remaining: "—", completed: false, memorization: "", arabic: "" },
+            { id: 69, fullDate: "2026-11-24", date: "24/11", day: "الثلاثاء", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "5:00", remaining: "1:00", completed: false, memorization: "", arabic: "" },
+            { id: 70, fullDate: "2026-11-24", date: "24/11", day: "الثلاثاء", time: "6 ص", student: "يوسف", duration: "45 د", durationVal: 0.75, cumulative: "5:15", remaining: "0:45", completed: false, memorization: "", arabic: "" },
+            { id: 71, fullDate: "2026-11-25", date: "25/11", day: "الأربعاء", time: "12 ص", student: "المثنى", duration: "30 د", durationVal: 0.5, cumulative: "5:00", remaining: "1:00", completed: false, memorization: "", arabic: "" },
+            { id: 72, fullDate: "2026-11-25", date: "25/11", day: "الأربعاء", time: "4 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "8:15", remaining: "0:45", completed: false, memorization: "", arabic: "" },
+            { id: 73, fullDate: "2026-11-26", date: "26/11", day: "الخميس", time: "12 ص", student: "سمير", duration: "45 د", durationVal: 0.75, cumulative: "5:15", remaining: "0:45", completed: false, memorization: "", arabic: "" },
+            { id: 74, fullDate: "2026-11-26", date: "26/11", day: "الخميس", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "5:30", remaining: "0:30", completed: false, memorization: "", arabic: "" },
+            { id: 75, fullDate: "2026-11-26", date: "26/11", day: "الخميس", time: "6 ص", student: "يوسف", duration: "45 د", durationVal: 0.75, cumulative: "6:00 ✅", remaining: "0:00", completed: false, memorization: "", arabic: "" },
+            { id: 76, fullDate: "2026-11-27", date: "27/11", day: "الجمعة", time: "10:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "5:30", remaining: "0:30", completed: false, memorization: "", arabic: "" },
+            { id: 77, fullDate: "2026-11-27", date: "27/11", day: "الجمعة", time: "10:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "5:30", remaining: "0:30", completed: false, memorization: "", arabic: "" },
+            { id: 78, fullDate: "2026-11-28", date: "28/11", day: "السبت", time: "12 ص", student: "سمير", duration: "45 د", durationVal: 0.75, cumulative: "6:00 ✅", remaining: "0:00", completed: false, memorization: "", arabic: "" },
+            { id: 79, fullDate: "2026-11-28", date: "28/11", day: "السبت", time: "3 ص", student: "عباس", duration: "45 د", durationVal: 0.75, cumulative: "6:00 ✅", remaining: "0:00", completed: false, memorization: "", arabic: "" },
+            { id: 80, fullDate: "2026-11-28", date: "28/11", day: "السبت", time: "4 ص", student: "زياد", duration: "45 د", durationVal: 0.75, cumulative: "9:00 ✅", remaining: "0:00", completed: false, memorization: "", arabic: "" },
+            { id: 81, fullDate: "2026-11-28", date: "28/11", day: "السبت", time: "7 م", student: "المثنى", duration: "60 د", durationVal: 1.0, cumulative: "6:00 ✅", remaining: "0:00", completed: false, memorization: "", arabic: "" },
+            { id: 82, fullDate: "2026-11-28", date: "28/11", day: "السبت", time: "11:30 م", student: "شكر الله", duration: "30 د", durationVal: 0.5, cumulative: "6:00 ✅", remaining: "0:00", completed: false, memorization: "", arabic: "" },
+            { id: 83, fullDate: "2026-11-28", date: "28/11", day: "السبت", time: "11:30 م", student: "أمينة", duration: "30 د", durationVal: 0.5, cumulative: "6:00 ✅", remaining: "0:00", completed: false, memorization: "", arabic: "" },
+            { id: 84, fullDate: "2026-11-29", date: "29/11", day: "الأحد", time: "1 ص", student: "يحيى", duration: "30 د", durationVal: 0.5, cumulative: "6:00 ✅", remaining: "0:00", completed: false, memorization: "", arabic: "" },
+            { id: 85, fullDate: "2026-11-30", date: "30/11", day: "الاثنين", time: "6 ص", student: "رائد", duration: "60 د", durationVal: 1.0, cumulative: "5:00 ✅", remaining: "—", completed: false, memorization: "", arabic: "" }
+        ];
+
+        let defaultStudentsList = [
+            { name: "زياد", target: "هدف: 9 س — يكتمل 28/11", targetHours: 9 },
+            { name: "عباس", target: "هدف: 6 س — يكتمل 28/11", targetHours: 6 },
+            { name: "يحيى", target: "هدف: 6 س — يكتمل 29/11", targetHours: 6 },
+            { name: "المثنى", target: "هدف: 6 س — يكتمل 28/11", targetHours: 6 },
+            { name: "رائد", target: "التراكمي: 5 س — يكتمل 30/11", targetHours: 5 },
+            { name: "سمير", target: "هدف: 6.5 س — 28/11", targetHours: 6.5 },
+            { name: "شكر الله", target: "هدف: 6 س — يكتمل 28/11", targetHours: 6 },
+            { name: "أمينة", target: "هدف: 6 س — تكتمل 28/11", targetHours: 6 },
+            { name: "يوسف", target: "هدف: 6 س — يكتمل 26/11", targetHours: 6 }
+        ];
+
+        let sessionsData = [];
+        let studentsData = [];
+        let currentLang = 'ar';
+        let selectedStudentName = '';
+
+        const daysMapAr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+
+        function getISOStringFromSession(s) {
+            if (s.fullDate) return s.fullDate;
+            if (s.date && s.date.includes('/')) {
+                const parts = s.date.split('/');
+                const day = parts[0].padStart(2, '0');
+                const month = parts[1].padStart(2, '0');
+                return `2026-${month}-${day}`;
+            }
+            return "2026-11-01";
+        }
+
+        function convertTimeTo24(timeStr) {
+            if (!timeStr) return "00:00";
+            let str = timeStr.trim();
+            const isPM = str.includes('م') || str.toLowerCase().includes('pm');
+            str = str.replace(/[أـأ-يa-zA-Z\s]/g, '');
+            let [h, m] = str.split(':');
+            let hour = parseInt(h, 10) || 0;
+            let min = parseInt(m, 10) || 0;
+            if (isPM && hour < 12) hour += 12;
+            if (!isPM && hour === 12) hour = 0;
+            return `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+        }
+
+        function parseDurationVal(durStr) {
+            if (!durStr) return 0.5;
+            if (durStr.includes('60') || durStr.includes('1 س')) return 1.0;
+            if (durStr.includes('45')) return 0.75;
+            return 0.5;
+        }
+
+        function formatHoursMinutes(val) {
+            const h = Math.floor(val);
+            const m = Math.round((val - h) * 60);
+            if (m === 0) return `${h}:00`;
+            return `${h}:${m < 10 ? '0' : ''}${m}`;
+        }
+
+        function sortSessionsChronologically(list) {
+            return list.sort((a, b) => {
+                const dateA = getISOStringFromSession(a);
+                const dateB = getISOStringFromSession(b);
+                if (dateA !== dateB) {
+                    return dateA.localeCompare(dateB);
+                }
+                const timeA = convertTimeTo24(a.time);
+                const timeB = convertTimeTo24(b.time);
+                if (timeA !== timeB) {
+                    return timeA.localeCompare(timeB);
+                }
+                return a.id - b.id;
+            });
+        }
+
+        function loadAppData() {
+            const savedSessions = localStorage.getItem('nov_sessions_v2');
+            const savedStudents = localStorage.getItem('nov_students_v2');
+
+            if (savedSessions) {
+                try { sessionsData = JSON.parse(savedSessions); } catch(e) { sessionsData = JSON.parse(JSON.stringify(rawScheduleData)); }
+            } else {
+                sessionsData = JSON.parse(JSON.stringify(rawScheduleData));
+            }
+
+            if (savedStudents) {
+                try { studentsData = JSON.parse(savedStudents); } catch(e) { studentsData = JSON.parse(JSON.stringify(defaultStudentsList)); }
+            } else {
+                studentsData = JSON.parse(JSON.stringify(defaultStudentsList));
+            }
+        }
+
+        function saveAppData() {
+            localStorage.setItem('nov_sessions_v2', JSON.stringify(sessionsData));
+            localStorage.setItem('nov_students_v2', JSON.stringify(studentsData));
+        }
+
+        window.resetDataStorage = function() {
+            localStorage.removeItem('nov_sessions_v2');
+            localStorage.removeItem('nov_students_v2');
+            sessionsData = JSON.parse(JSON.stringify(rawScheduleData));
+            studentsData = JSON.parse(JSON.stringify(defaultStudentsList));
+            window.refreshAllUI();
+            window.showCustomMsg("إعادة ضبط", "تم إعادة ضبط البيانات إلى الحالات الافتراضية بنجاح.");
+        };
+
+        window.updateDayFromDate = function(dateInputId, dayInputId) {
+            const dateVal = document.getElementById(dateInputId).value;
+            if (!dateVal) return;
+            const d = new Date(dateVal);
+            const dayName = daysMapAr[d.getDay()];
+            document.getElementById(dayInputId).value = dayName;
+        };
+
+        function recalculateStudentCumulative() {
+            studentsData.forEach(student => {
+                const stSessions = sessionsData.filter(s => s.student === student.name && !s.isPostponed);
+                stSessions.sort((a, b) => {
+                    const dateA = getISOStringFromSession(a);
+                    const dateB = getISOStringFromSession(b);
+                    if (dateA !== dateB) return dateA.localeCompare(dateB);
+                    return convertTimeTo24(a.time).localeCompare(convertTimeTo24(b.time));
+                });
+
+                let cum = 0;
+                stSessions.forEach(s => {
+                    if (s.completed) {
+                        cum += (s.durationVal || parseDurationVal(s.duration));
+                    }
+                    const target = student.targetHours || 6;
+                    const rem = Math.max(0, target - cum);
+                    
+                    s.cumulative = formatHoursMinutes(cum) + (cum >= target ? ' ✅' : '');
+                    s.remaining = target ? formatHoursMinutes(rem) : '—';
+                });
+            });
+        }
+
+        window.refreshAllUI = function() {
+            sessionsData = sortSessionsChronologically(sessionsData);
+            recalculateStudentCumulative();
+            renderAdminTable();
+            updateAdminStats();
+            renderCompletionSummaryCards();
+            populateStudentFilters();
+            populateStudentSelector();
+            if (selectedStudentName) {
+                renderStudentDashboard(selectedStudentName);
+            }
+        };
+
+        function renderAdminTable(filteredList = null) {
+            const tbody = document.getElementById('admin-sessions-table');
+            if (!tbody) return;
+            const list = filteredList || sessionsData;
+            tbody.innerHTML = '';
+
+            const countBadge = document.getElementById('session-count-badge');
+            if (countBadge) {
+                countBadge.innerText = `${list.length} ${currentLang === 'ar' ? 'حصة' : 'sessions'}`;
+            }
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-400 font-semibold">${currentLang === 'ar' ? 'لا توجد حصص مطابقة' : 'No sessions match'}</td></tr>`;
+                return;
+            }
+
+            list.forEach(session => {
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-slate-950/50 transition-colors ${session.isPostponed ? 'bg-amber-950/10 border-l-2 border-amber-500' : ''}`;
+                tr.innerHTML = `
+                    <td class="py-4 px-4 text-center">
+                        <div class="flex items-center justify-center space-x-2 space-x-reverse">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" ${session.completed ? 'checked' : ''} onchange="window.toggleSessionComplete(${session.id})" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
+                            ${session.isPostponed ? `<span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded border border-amber-500/30">مؤجلة 🔄</span>` : ''}
+                        </div>
+                    </td>
+                    <td class="py-4 px-4 font-bold text-white">
+                        ${session.date} <span class="text-xs font-normal text-slate-400 block">(${session.day})</span>
+                    </td>
+                    <td class="py-4 px-4">
+                        <span class="px-3 py-1 bg-amber-500/10 text-amber-300 font-bold text-xs rounded-lg border border-amber-500/30">${session.student}</span>
+                    </td>
+                    <td class="py-4 px-4 text-slate-300 font-mono text-xs">${session.time}</td>
+                    <td class="py-4 px-4 font-bold text-amber-400">${session.duration}</td>
+                    <td class="py-4 px-4 font-bold text-emerald-400 font-mono">${session.isPostponed ? '—' : (session.cumulative || '-')}</td>
+                    <td class="py-4 px-4 text-slate-300 font-mono">${session.isPostponed ? '—' : (session.remaining || '—')}</td>
+                    <td class="py-4 px-4 max-w-xs truncate">
+                        <div class="text-xs text-slate-300 truncate"><strong class="text-amber-400">${currentLang === 'ar' ? 'حفظ' : 'Memo'}:</strong> ${session.memorization || (currentLang === 'ar' ? 'لم يُسجل' : 'Not recorded')}</div>
+                        <div class="text-xs text-slate-300 truncate mt-0.5"><strong class="text-teal-400">${currentLang === 'ar' ? 'عربية' : 'Arabic'}:</strong> ${session.arabic || (currentLang === 'ar' ? 'لم يُسجل' : 'Not recorded')}</div>
+                    </td>
+                    <td class="py-4 px-4 text-center">
+                        <button onclick="window.openSessionModal(${session.id})" class="p-2 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl transition-all shadow-sm border border-slate-700" title="${currentLang === 'ar' ? 'تعديل التفاصيل' : 'Edit details'}">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function updateAdminStats() {
+            const total = sessionsData.length;
+            const completed = sessionsData.filter(s => s.completed).length;
+
+            let nov28CompletedHours = 0;
+            let totalCompletedHours = 0;
+            let totalTargetHours = 0;
+
+            studentsData.forEach(st => {
+                totalTargetHours += (st.targetHours || 6);
+            });
+
+            sessionsData.forEach(s => {
+                const isoDate = getISOStringFromSession(s);
+                const dur = (s.durationVal || parseDurationVal(s.duration));
+
+                if (s.completed && !s.isPostponed) {
+                    totalCompletedHours += dur;
+                    if (isoDate <= "2026-11-28") {
+                        nov28CompletedHours += dur;
+                    }
+                }
+            });
+
+            const elTotal = document.getElementById('stat-total-sessions');
+            const elComp = document.getElementById('stat-completed-sessions');
+            const elHours28 = document.getElementById('stat-completed-hours-nov28');
+            const elHoursMonthEnd = document.getElementById('stat-month-end-completed-hours');
+            const elStudents = document.getElementById('stat-total-students');
+
+            if (elTotal) elTotal.innerText = total;
+            if (elComp) elComp.innerText = completed;
+            if (elHours28) elHours28.innerText = `${formatHoursMinutes(nov28CompletedHours)} س`;
+            if (elHoursMonthEnd) elHoursMonthEnd.innerText = `${formatHoursMinutes(totalCompletedHours)} / ${formatHoursMinutes(totalTargetHours)} س`;
+            if (elStudents) elStudents.innerText = studentsData.length;
+        }
+
+        function renderCompletionSummaryCards() {
+            const container = document.getElementById('students-completion-grid');
+            if (!container) return;
+            container.innerHTML = '';
+
+            studentsData.forEach(st => {
+                const stSessions = sessionsData.filter(s => s.student === st.name && !s.isPostponed);
+                const completedSessions = stSessions.filter(s => s.completed);
+                
+                let totalHours = 0;
+                completedSessions.forEach(s => {
+                    totalHours += (s.durationVal || parseDurationVal(s.duration));
+                });
+
+                const targetHours = st.targetHours || 6;
+                const pct = Math.min(100, Math.round((totalHours / targetHours) * 100));
+
+                const div = document.createElement('div');
+                div.className = "bg-slate-950 p-4 rounded-xl border border-slate-800 flex items-center justify-between";
+                div.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <span class="font-bold text-white text-sm">${st.name}</span>
+                            <button onclick="window.removeStudent('${st.name}')" class="text-rose-400 hover:text-rose-300 p-1" title="حذف الطالب">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-400">${st.target}</p>
+                        <div class="w-full bg-slate-800 rounded-full h-1.5 mt-2 overflow-hidden w-28">
+                            <div class="bg-amber-400 h-1.5 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <span class="text-lg font-black text-amber-400">${formatHoursMinutes(totalHours)} س</span>
+                        <span class="text-xs text-slate-500 block">/ ${targetHours} س</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function populateStudentFilters() {
+            const select = document.getElementById('admin-filter-student');
+            if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = `<option value="">${currentLang === 'ar' ? 'جميع الطلاب' : 'All Students'}</option>`;
+            studentsData.forEach(st => {
+                const opt = document.createElement('option');
+                opt.value = st.name;
+                opt.textContent = st.name;
+                select.appendChild(opt);
+            });
+            select.value = currentVal;
+        }
+
+        function populateStudentSelector() {
+            const select = document.getElementById('student-selector');
+            const aiSelect = document.getElementById('ai-target-student');
+            const newMeetingSelect = document.getElementById('new-meeting-student');
+
+            if (select) {
+                select.innerHTML = `<option value="">${currentLang === 'ar' ? '-- اختر اسمك من القائمة --' : '-- Choose your name --'}</option>`;
+                studentsData.forEach(st => {
+                    const opt = document.createElement('option');
+                    opt.value = st.name;
+                    opt.textContent = st.name;
+                    select.appendChild(opt);
+                });
+                select.value = selectedStudentName;
+            }
+
+            if (aiSelect) {
+                aiSelect.innerHTML = `<option value="ALL">${currentLang === 'ar' ? 'تقرير عام لكل الطلاب والأكاديمية' : 'General Academy Report'}</option>`;
+                studentsData.forEach(st => {
+                    const opt = document.createElement('option');
+                    opt.value = st.name;
+                    opt.textContent = `طالب: ${st.name}`;
+                    aiSelect.appendChild(opt);
+                });
+            }
+
+            if (newMeetingSelect) {
+                newMeetingSelect.innerHTML = '';
+                studentsData.forEach(st => {
+                    const opt = document.createElement('option');
+                    opt.value = st.name;
+                    opt.textContent = st.name;
+                    newMeetingSelect.appendChild(opt);
+                });
+            }
+        }
+
+        window.toggleSessionComplete = function(id) {
+            const session = sessionsData.find(s => s.id === id);
+            if (session) {
+                session.completed = !session.completed;
+                saveAppData();
+                window.refreshAllUI();
+            }
+        };
+
+        window.openSessionModal = function(id) {
+            const session = sessionsData.find(s => s.id === id);
+            if (!session) return;
+
+            document.getElementById('modal-session-id').value = session.id;
+            document.getElementById('modal-day').value = session.day;
+            document.getElementById('modal-time').value = session.time || '';
+            document.getElementById('modal-duration').value = session.duration || '30 د';
+            document.getElementById('modal-memorization').value = session.memorization || '';
+            document.getElementById('modal-arabic').value = session.arabic || '';
+            document.getElementById('modal-display-status').innerText = session.completed ? 'منجزة ✅' : 'قيد الانتظار ⏳';
+
+            document.getElementById('session-modal').classList.remove('hidden');
+        };
+
+        window.closeSessionModal = function() {
+            document.getElementById('session-modal').classList.add('hidden');
+        };
+
+        window.toggleModalSessionStatus = function() {
+            const id = parseInt(document.getElementById('modal-session-id').value);
+            const session = sessionsData.find(s => s.id === id);
+            if (session) {
+                session.completed = !session.completed;
+                document.getElementById('modal-display-status').innerText = session.completed ? 'منجزة ✅' : 'قيد الانتظار ⏳';
+            }
+        };
+
+        window.saveSessionDetails = function() {
+            const id = parseInt(document.getElementById('modal-session-id').value);
+            const session = sessionsData.find(s => s.id === id);
+            if (session) {
+                const datePickerVal = document.getElementById('modal-date').value;
+                if (datePickerVal) {
+                    const d = new Date(datePickerVal);
+                    session.fullDate = datePickerVal;
+                    session.date = `${d.getDate()}/${d.getMonth() + 1}`;
+                    session.day = daysMapAr[d.getDay()];
+                }
+                session.time = document.getElementById('modal-time').value;
+                session.duration = document.getElementById('modal-duration').value;
+                session.durationVal = parseDurationVal(session.duration);
+                session.memorization = document.getElementById('modal-memorization').value;
+                session.arabic = document.getElementById('modal-arabic').value;
+
+                saveAppData();
+                window.closeSessionModal();
+                window.refreshAllUI();
+                window.showCustomMsg("تحديث بنجاح", "تم تحديث تفاصيل الحصة وتجديد الحسابات التراكمية.");
+            }
+        };
+
+        window.deleteCurrentSession = function() {
+            const id = parseInt(document.getElementById('modal-session-id').value);
+            sessionsData = sessionsData.filter(s => s.id !== id);
+            saveAppData();
+            window.closeSessionModal();
+            window.refreshAllUI();
+            window.showCustomMsg("حذف الحصة", "تم حذف الحصة من الجدول وإعادة حساب التراكمي.");
+        };
+
+        window.openAddStudentModal = function() {
+            document.getElementById('new-student-name-input').value = '';
+            document.getElementById('student-modal').classList.remove('hidden');
+        };
+
+        window.closeAddStudentModal = function() {
+            document.getElementById('student-modal').classList.add('hidden');
+        };
+
+        window.removeStudent = function(name) {
+            studentsData = studentsData.filter(st => st.name !== name);
+            sessionsData = sessionsData.filter(s => s.student !== name);
+            saveAppData();
+            window.refreshAllUI();
+            window.showCustomMsg("حذف طالب", `تم حذف الطالب "${name}" وكافة حصصه.`);
+        };
+
+        window.openAddSessionModal = function() {
+            populateStudentSelector();
+            document.getElementById('meeting-modal').classList.remove('hidden');
+        };
+
+        window.closeAddSessionModal = function() {
+            document.getElementById('meeting-modal').classList.add('hidden');
+        };
+
+        window.filterSessions = function() {
+            const search = document.getElementById('admin-search').value.toLowerCase();
+            const studentFilter = document.getElementById('admin-filter-student').value;
+            const statusFilter = document.getElementById('admin-filter-status').value;
+
+            const filtered = sessionsData.filter(s => {
+                const matchSearch = s.student.toLowerCase().includes(search) || s.date.includes(search) || s.day.includes(search);
+                const matchStudent = studentFilter === "" || s.student === studentFilter;
+                const matchStatus = statusFilter === "" || 
+                    (statusFilter === "completed" && s.completed) || 
+                    (statusFilter === "pending" && !s.completed && !s.isPostponed) ||
+                    (statusFilter === "postponed" && s.isPostponed);
+                return matchSearch && matchStudent && matchStatus;
+            });
+
+            renderAdminTable(filtered);
+        };
+
+        window.confirmAddStudent = function() {
+            const nameInput = document.getElementById('new-student-name-input').value.trim();
+            const targetHours = parseFloat(document.getElementById('new-student-target-hours').value) || 6;
+            const targetInput = document.getElementById('new-student-target-input').value.trim() || `هدف: ${targetHours} س`;
+
+            if (!nameInput) {
+                window.showCustomMsg(currentLang === 'ar' ? 'تنبيه' : 'Notice', currentLang === 'ar' ? 'يرجى إدخال اسم الطالب.' : 'Please enter student name.', false);
+                return;
+            }
+
+            if (studentsData.some(st => st.name === nameInput)) {
+                window.showCustomMsg(currentLang === 'ar' ? 'تنبيه' : 'Notice', currentLang === 'ar' ? 'هذا الطالب مسجل مسبقاً.' : 'Student already exists.', false);
+                return;
+            }
+
+            studentsData.push({ name: nameInput, target: targetInput, targetHours: targetHours });
+            saveAppData();
+            window.closeAddStudentModal();
+            window.refreshAllUI();
+
+            window.showCustomMsg(
+                currentLang === 'ar' ? 'إضافة طالب ناجحة' : 'Student Added Successfully',
+                currentLang === 'ar' ? `تم إضافة الطالب "${nameInput}" بنجاح بهدف ${targetHours} ساعات.` : `Student "${nameInput}" added with target of ${targetHours} hours.`
+            );
+        };
+
+        window.confirmAddSession = function() {
+            const student = document.getElementById('new-meeting-student').value;
+            const datePickerVal = document.getElementById('new-meeting-date-picker').value;
+            const timePickerVal = document.getElementById('new-meeting-time-picker').value;
+            const durationSelect = document.getElementById('new-meeting-duration-select').value;
+
+            let fullDateStr = datePickerVal || "2026-11-30";
+            let d = new Date(fullDateStr);
+            let dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
+            let dayStr = daysMapAr[d.getDay()];
+
+            let formattedTime = "6:00 ص";
+            if (timePickerVal) {
+                const [h, m] = timePickerVal.split(':');
+                const hourNum = parseInt(h, 10);
+                const isPM = hourNum >= 12;
+                const displayHour = hourNum % 12 || 12;
+                formattedTime = `${displayHour}:${m} ${isPM ? 'م' : 'ص'}`;
+            }
+
+            const durationVal = parseDurationVal(durationSelect);
+            const newId = sessionsData.length > 0 ? Math.max(...sessionsData.map(s => s.id)) + 1 : 1;
+            
+            sessionsData.push({
+                id: newId,
+                fullDate: fullDateStr,
+                date: dateStr,
+                day: dayStr,
+                time: formattedTime,
+                student: student,
+                duration: durationSelect,
+                durationVal: durationVal,
+                cumulative: "حاسبة...",
+                remaining: "—",
+                completed: false,
+                isPostponed: false,
+                memorization: "",
+                arabic: ""
+            });
+
+            saveAppData();
+            window.closeAddSessionModal();
+            window.refreshAllUI();
+            window.showCustomMsg(currentLang === 'ar' ? 'إضافة حصة' : 'Session Added', currentLang === 'ar' ? 'تمت إضافة الحصة وترتيبها زمنياً وتحديث إجمالي التراكميات بنجاح.' : 'New session added, sorted chronologically, and overall cumulative hours updated.');
+        };
+
+        window.openPostponeModal = function() {
+            document.getElementById('postpone-date-picker').value = '';
+            document.getElementById('postpone-day').value = '';
+            document.getElementById('postpone-time-picker').value = '';
+            document.getElementById('postpone-modal').classList.remove('hidden');
+        };
+
+        window.closePostponeModal = function() {
+            document.getElementById('postpone-modal').classList.add('hidden');
+        };
+
+        window.confirmPostponeSession = function() {
+            const id = parseInt(document.getElementById('modal-session-id').value);
+            const originalSession = sessionsData.find(s => s.id === id);
+            if (!originalSession) return;
+
+            const dateVal = document.getElementById('postpone-date-picker').value;
+            const timeVal = document.getElementById('postpone-time-picker').value;
+
+            if (!dateVal) {
+                window.showCustomMsg("تنبيه", "يرجى تحديد التاريخ الجديد للحصة المؤجلة.", false);
+                return;
+            }
+
+            const d = new Date(dateVal);
+            const newDateStr = `${d.getDate()}/${d.getMonth() + 1}`;
+            const newDayStr = daysMapAr[d.getDay()];
+
+            let formattedTime = originalSession.time;
+            if (timeVal) {
+                const [h, m] = timeVal.split(':');
+                const hourNum = parseInt(h, 10);
+                const isPM = hourNum >= 12;
+                const displayHour = hourNum % 12 || 12;
+                formattedTime = `${displayHour}:${m} ${isPM ? 'م' : 'ص'}`;
+            }
+
+            originalSession.isPostponed = true;
+
+            const newId = Math.max(...sessionsData.map(s => s.id)) + 1;
+            sessionsData.push({
+                id: newId,
+                fullDate: dateVal,
+                date: newDateStr,
+                day: newDayStr,
+                time: formattedTime,
+                student: originalSession.student,
+                duration: originalSession.duration,
+                durationVal: originalSession.durationVal,
+                cumulative: "حاسبة...",
+                remaining: "—",
+                completed: false,
+                isPostponed: false,
+                memorization: `[حصة تعويضية من ${originalSession.date}]`,
+                arabic: ""
+            });
+
+            saveAppData();
+            window.closePostponeModal();
+            window.closeSessionModal();
+            window.refreshAllUI();
+            window.showCustomMsg("تأجيل الحصة", `تم تأجيل حصة ${originalSession.student} وتجدولتها وترتيبها زمنياً في يوم ${newDayStr} (${newDateStr}).`);
+        };
+
+        window.switchView = function(view) {
+            const adminView = document.getElementById('admin-view');
+            const studentView = document.getElementById('student-view');
+            const adminBtn = document.getElementById('nav-admin-btn');
+            const studentBtn = document.getElementById('nav-student-btn');
+
+            if (view === 'admin') {
+                adminView.classList.remove('hidden');
+                studentView.classList.add('hidden');
+                adminBtn.className = "flex items-center space-x-1.5 space-x-reverse px-3.5 py-2 rounded-xl text-sm font-bold transition-all bg-amber-600 hover:bg-amber-500 text-slate-950 shadow-md";
+                studentBtn.className = "flex items-center space-x-1.5 space-x-reverse px-3.5 py-2 rounded-xl text-sm font-bold transition-all bg-slate-800/80 hover:bg-slate-700 text-amber-200 border border-amber-700/50";
+            } else {
+                adminView.classList.add('hidden');
+                studentView.classList.remove('hidden');
+                studentBtn.className = "flex items-center space-x-1.5 space-x-reverse px-3.5 py-2 rounded-xl text-sm font-bold transition-all bg-amber-600 hover:bg-amber-500 text-slate-950 shadow-md";
+                adminBtn.className = "flex items-center space-x-1.5 space-x-reverse px-3.5 py-2 rounded-xl text-sm font-bold transition-all bg-slate-800/80 hover:bg-slate-700 text-amber-200 border border-amber-700/50";
+            }
+        };
+
+        window.onStudentSelect = function(studentName) {
+            selectedStudentName = studentName;
+            if (!studentName) {
+                document.getElementById('student-dashboard').classList.add('hidden');
+                document.getElementById('student-empty-state').classList.remove('hidden');
+                return;
+            }
+            renderStudentDashboard(studentName);
+        };
+
+        function renderStudentDashboard(studentName) {
+            document.getElementById('student-empty-state').classList.add('hidden');
+            document.getElementById('student-dashboard').classList.remove('hidden');
+
+            const stObj = studentsData.find(s => s.name === studentName);
+            const list = sessionsData.filter(s => s.student === studentName);
+
+            const completedList = list.filter(s => s.completed && !s.isPostponed);
+            let totalHours = 0;
+            completedList.forEach(s => {
+                totalHours += (s.durationVal || parseDurationVal(s.duration));
+            });
+
+            document.getElementById('student-stat-hours').innerText = `${formatHoursMinutes(totalHours)} س`;
+            document.getElementById('student-stat-target-desc').innerText = stObj ? stObj.target : `هدف: 6 س`;
+            document.getElementById('student-stat-completed').innerText = `${completedList.length} / ${list.length}`;
+
+            const lastMemo = list.filter(s => s.memorization).pop();
+            document.getElementById('student-stat-memorization').innerText = lastMemo ? lastMemo.memorization : (currentLang === 'ar' ? 'لا يوجد تقييم بعد' : 'No evaluation yet');
+
+            const tbody = document.getElementById('student-sessions-table');
+            tbody.innerHTML = '';
+
+            list.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-950/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-4 px-6">
+                        ${s.isPostponed ? 
+                            '<span class="px-3 py-1 bg-amber-500/20 text-amber-400 font-bold text-xs rounded-lg border border-amber-500/30">مؤجلة 🔄</span>' :
+                            (s.completed ? 
+                                '<span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 font-bold text-xs rounded-lg border border-emerald-500/30">تمت بنجاح ✅</span>' :
+                                '<span class="px-3 py-1 bg-slate-800 text-slate-400 font-bold text-xs rounded-lg">قيد الانتظار ⏳</span>')
+                        }
+                    </td>
+                    <td class="py-4 px-6 font-bold text-white">${s.date} (${s.day})</td>
+                    <td class="py-4 px-6 text-slate-300 font-mono">${s.time}</td>
+                    <td class="py-4 px-6 font-bold text-amber-400">${s.duration}</td>
+                    <td class="py-4 px-6 font-bold text-emerald-400 font-mono">${s.isPostponed ? '—' : s.cumulative}</td>
+                    <td class="py-4 px-6 text-slate-300 font-mono">${s.isPostponed ? '—' : s.remaining}</td>
+                    <td class="py-4 px-6 text-slate-300 text-xs">${s.memorization || '-'}</td>
+                    <td class="py-4 px-6 text-slate-300 text-xs">${s.arabic || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.openAiModal = function() {
+            populateStudentSelector();
+            document.getElementById('ai-modal').classList.remove('hidden');
+            document.getElementById('ai-result-container').classList.add('hidden');
+        };
+
+        window.closeAiModal = function() {
+            document.getElementById('ai-modal').classList.add('hidden');
+        };
+
+        window.generateAiReport = function() {
+            const target = document.getElementById('ai-target-student').value;
+            const loading = document.getElementById('ai-loading');
+            const result = document.getElementById('ai-result-container');
+
+            loading.classList.remove('hidden');
+            result.classList.add('hidden');
+
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                result.classList.remove('hidden');
+
+                const content = document.getElementById('ai-report-content');
+                if (target === 'ALL') {
+                    let totalCompletedHours = 0;
+                    let totalTargetHours = 0;
+                    studentsData.forEach(st => totalTargetHours += (st.targetHours || 6));
+
+                    sessionsData.forEach(s => {
+                        if (s.completed && !s.isPostponed) totalCompletedHours += (s.durationVal || parseDurationVal(s.duration));
+                    });
+
+                    content.innerHTML = `
+                        <p><strong>تقرير الأداء العام لأكاديمية نوفمبر ٢٠٢٦:</strong></p>
+                        <p>• إجمالي الطلاب المسجلين: ${studentsData.length} طلاب.</p>
+                        <p>• إجمالي الساعات المكتملة حتى الآن: ${formatHoursMinutes(totalCompletedHours)} ساعة من أصل ${formatHoursMinutes(totalTargetHours)} ساعة مستهدفة.</p>
+                        <p>• نسبة الالتزام والتنفيذ العام: ممتازة وفي إطار الجدول الخطي التراكمي المحدد.</p>
+                        <p>• التوصية: الاستمرار في الحفاظ على المواعيد المحددة لضمان إنهاء الهدف قبل نهاية الشهر.</p>
+                    `;
+                } else {
+                    const stSessions = sessionsData.filter(s => s.student === target && !s.isPostponed);
+                    const completed = stSessions.filter(s => s.completed);
+                    let hours = 0;
+                    completed.forEach(s => hours += (s.durationVal || parseDurationVal(s.duration)));
+                    const stObj = studentsData.find(s => s.name === target);
+
+                    content.innerHTML = `
+                        <p><strong>تقرير أداء الطالب (${target}) - نوفمبر ٢٠٢٦:</strong></p>
+                        <p>• إجمالي الحصص المقررة: ${stSessions.length} حصص.</p>
+                        <p>• الحصص المنجزة بنجاح: ${completed.length} حصص.</p>
+                        <p>• الساعات التراكمية المكتملة: ${formatHoursMinutes(hours)} ساعة من إجمالي (${stObj ? stObj.targetHours : 6} ساعات).</p>
+                        <p>• التقييم العام: أداء متميز والتزام عالٍ بمواعيد الحصص المقررة بتوقيت مصر.</p>
+                    `;
+                }
+            }, 600);
+        };
+
+        window.copyAiReport = function() {
+            const text = document.getElementById('ai-report-content').innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                window.showCustomMsg("تم النسخ", "تم نسخ التقرير الذكي إلى الحافظة بنجاح.");
+            } catch(e) {}
+            document.body.removeChild(textarea);
+        };
+
+        window.showCustomMsg = function(title, msg, isSuccess = true) {
+            document.getElementById('msg-box-title').innerText = title;
+            document.getElementById('msg-box-text').innerText = msg;
+            document.getElementById('custom-msg-box').classList.remove('hidden');
+        };
+
+        window.closeCustomMsgBox = function() {
+            document.getElementById('custom-msg-box').classList.add('hidden');
+        };
+
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'rtl';
+            document.getElementById('header-title').innerText = currentLang === 'ar' ? 'أكاديمية نوفمبر ٢٠٢٦' : 'Academy November 2026';
+            window.refreshAllUI();
+        };
+
+        window.onload = function() {
+            loadAppData();
+            window.refreshAllUI();
+        };
+    </script>
+</body>
+</html>
